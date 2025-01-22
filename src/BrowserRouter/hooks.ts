@@ -8,13 +8,7 @@ export function useSearchParams() {
 }
 
 export function usePage() {
-  return (
-    new URL(
-      location.origin + location.pathname + useContext(BrowserContext).page,
-    ).searchParams
-      .get('page')
-      ?.slice(1, -1) ?? ''
-  )
+  return useSearchParams().get('page')?.slice(1, -1) ?? ''
 }
 
 export function useSetPage() {
