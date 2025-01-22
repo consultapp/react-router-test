@@ -1,12 +1,10 @@
 import { useContext } from 'react'
 import { BrowserContext } from './context'
 
-export function useQuery() {
-  return new URLSearchParams(window.location.search)
-}
-
 export function useSearchParams() {
-  return new URLSearchParams(window.location.search)
+  return new URL(
+    location.origin + location.pathname + useContext(BrowserContext).page,
+  ).searchParams
 }
 
 export function usePage() {
