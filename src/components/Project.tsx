@@ -1,6 +1,14 @@
+import { useSearchParams } from '../BrowserRouter/hooks'
+import Menu from './Menu'
+
 const Project = () => {
-  // const { pid } = useParams()
-  return <h2>Project: </h2>
+  const s = useSearchParams()
+  return (
+    <>
+      <Menu />
+      <h2>Project:{s.get('id')} </h2>
+    </>
+  )
 }
 
 export { Project }

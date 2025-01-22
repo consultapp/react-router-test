@@ -1,8 +1,12 @@
-import { useParams } from 'react-router'
+import Menu from './Menu'
 
 const EditProject = () => {
-  const { pid } = useParams()
-  return <h2>EditProject: {pid}</h2>
+  return (
+    <>
+      <Menu />
+      <h2>EditProject:</h2>
+    </>
+  )
 }
 
 export { EditProject }

@@ -4,8 +4,15 @@ type Props = {
 }
 
 export const NavLink = ({ to = '', children }: Props) => {
-  const to1 = new URLSearchParams(to)
-  console.log('to1', to1)
+  const url = to.split('?')
 
-  return <a href={`?page=(${to})`}>{children}</a>
+  return (
+    <a
+      href={`${url[0] ? `?page=(${url[0] ?? ''})` : ''}${
+        url[1] ? `&${url[1]}` : ''
+      }`}
+    >
+      {children}
+    </a>
+  )
 }

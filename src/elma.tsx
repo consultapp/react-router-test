@@ -8,9 +8,9 @@ import Page2 from './pages/Page2'
 import { ProjectsHome } from './components/ProjectsHome'
 
 import { Project } from './components/Project'
-import { EditProject } from './components/EditProject'
 import { BrowserRouter } from './BrowserRouter'
 import { Route } from './BrowserRouter/Route/Route'
+import { EditProject } from './components/EditProject'
 
 let renderCount = 0
 
@@ -27,11 +27,11 @@ function reactRender({ root, contextData, server }: ElmaProps) {
         <BrowserRouter>
           <>
             <Route element={<Home />} />
-            <Route page={'page1'} element={<Page1 />} />
-            <Route page={'page2'} element={<Page2 />} />
+            <Route page='page1' element={<Page1 />} />
+            <Route page='page2' element={<Page2 />} />
             <Route page='projects' element={<ProjectsHome />} />
-            <Route page='projects/2/edit' element={<EditProject />} />
             <Route page='project' element={<Project />} />
+            <Route page='project/1/edit' element={<EditProject />} />
           </>
         </BrowserRouter>
       </StrictMode>,
