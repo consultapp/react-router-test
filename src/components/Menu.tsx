@@ -7,13 +7,15 @@ export default function Menu() {
       <NavLink>Home</NavLink>
       <NavLink to='page1'>Page1</NavLink>
       <NavLink to='page2'>Page2</NavLink>
-      <NavLink to='page2?q=222'>Page2 - page2?q=222</NavLink>
+      <NavLink to='page2?q=222'>Page2 q=222</NavLink>
+      <NavLink to='page2?q=333'>Page2 q=333</NavLink>
       <NavLink to={`projects`}>projects</NavLink>
+      <hr style={{ width: '100%' }} />
       <NavLink to={`project`}>project</NavLink>
-      <hr />
-      <NavLink to={`project?id=1`}> projects 1</NavLink>
-      <NavLink to={`project?id=2`}> projects 2</NavLink>
-      <NavLink to={`project/1/edit`}>edit project</NavLink>
+      <NavLink to={`project?id=1`}> project: 1</NavLink>
+      <NavLink to={`project?id=2`}> project: 2</NavLink>
+      <NavLink to={`project/edit?id=1`}>edit project 1</NavLink>
+      <NavLink to={`project/edit?id=2`}>edit project 2</NavLink>
     </div>
   )
 }

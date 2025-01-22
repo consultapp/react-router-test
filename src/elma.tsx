@@ -31,7 +31,7 @@ function reactRender({ root, contextData, server }: ElmaProps) {
             <Route page='page2' element={<Page2 />} />
             <Route page='projects' element={<ProjectsHome />} />
             <Route page='project' element={<Project />} />
-            <Route page='project/1/edit' element={<EditProject />} />
+            <Route page='project/edit' element={<EditProject />} />
           </>
         </BrowserRouter>
       </StrictMode>,
