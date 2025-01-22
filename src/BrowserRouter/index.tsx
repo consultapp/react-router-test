@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { BrowserContext } from './context'
 
 type Props = {
@@ -7,6 +7,18 @@ type Props = {
 
 export function BrowserRouter({ children }: Props) {
   const [page, setPage] = useState(window.location.search)
+
+  useEffect(() => {
+    const controller = new AbortController()
+    window.addEventListener(
+      'popstate',
+      () => {
+        setPage(window.location.search)
+      },
+      { signal: controller.signal },
+    )
+    return () => controller.abort()
+  }, [])
 
   console.log('page', page)
   return (
