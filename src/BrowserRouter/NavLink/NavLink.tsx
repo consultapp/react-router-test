@@ -1,3 +1,5 @@
+import { useCallback, useMemo } from 'react'
+import { getBaseUrl } from '../fns'
 import { useSetPage } from '../hooks'
 
 type Props = {
@@ -8,16 +10,21 @@ type Props = {
 export const NavLink = ({ to = '', children }: Props) => {
   const setPage = useSetPage()
 
-  const url = to.split('?')
-  const page = url[0] ? `?page=(${url[0] ?? ''})` : ''
-  const params = url[1] ? `&${url[1]}` : ''
-  const href = `${page}${params}`
+  const href = useMemo(() => {
+    const url = to.split('?')
+    const page = url[0] ? `?page=(${url[0] ?? ''})` : ''
+    const params = url[1] ? `&${url[1]}` : ''
+    return `${page}${params}`
+  }, [to])
 
-  const clickHandler: React.MouseEventHandler<HTMLAnchorElement> = e => {
-    e.preventDefault()
-    history.pushState(null, '', location.origin + location.pathname + href)
-    setPage(href)
-  }
+  const clickHandler: React.MouseEventHandler<HTMLAnchorElement> = useCallback(
+    e => {
+      e.preventDefault()
+      history.pushState(null, '', getBaseUrl() + href)
+      setPage(href)
+    },
+    [href, setPage],
+  )
   return (
     <a href={href} onClick={clickHandler}>
       {children}

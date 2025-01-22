@@ -1,10 +1,9 @@
 import { useContext } from 'react'
 import { BrowserContext } from './context'
+import { getBaseUrl } from './fns'
 
 export function useSearchParams() {
-  return new URL(
-    location.origin + location.pathname + useContext(BrowserContext).page,
-  ).searchParams
+  return new URL(getBaseUrl() + useContext(BrowserContext).page).searchParams
 }
 
 export function usePage() {
