@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react'
-import { getBaseUrl } from '../fns'
+import { getBaseUrl } from '../utils'
 import { useSetPage } from '../hooks'
 
 type Props = {

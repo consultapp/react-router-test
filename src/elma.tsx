@@ -8,8 +8,7 @@ import Page2 from './pages/Page2'
 import { ProjectsHome } from './components/ProjectsHome'
 
 import { Project } from './components/Project'
-import { BrowserRouter } from './BrowserRouter'
-import { Route } from './BrowserRouter/Route/Route'
+import { BrowserRouter, Route } from './BrowserRouter'
 import { EditProject } from './components/EditProject'
 
 let renderCount = 0

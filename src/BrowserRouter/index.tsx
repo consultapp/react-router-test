@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
 import { BrowserContext } from './context'
+import { NavLink } from './NavLink/NavLink'
+import { Route } from './Route/Route'
 
 type Props = {
   children: React.ReactElement
 }
 
-export function BrowserRouter({ children }: Props) {
+function BrowserRouter({ children }: Props) {
   const [page, setPage] = useState(window.location.search)
 
   useEffect(() => {
@@ -27,3 +29,4 @@ export function BrowserRouter({ children }: Props) {
     </BrowserContext.Provider>
   )
 }
+export { BrowserRouter, NavLink, Route }
