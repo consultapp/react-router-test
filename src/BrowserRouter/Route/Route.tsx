@@ -25,7 +25,7 @@ function getParams(pageMask: string, pageName: string) {
   const result: Record<string, string> = {}
 
   pageMaskArr.forEach((item, i) => {
-    if (item.includes(':')) result[item.slice(1)] = pageNameArr[i]
+    if (item.startsWith(':')) result[item.slice(1)] = pageNameArr[i]
   })
 
   return result
@@ -33,16 +33,16 @@ function getParams(pageMask: string, pageName: string) {
 
 export function Route({ element, page = '' }: Props) {
   const pageName = usePage()
-  const regexp = getPageRegExp(page)
+  const regexp = useMemo(() => getPageRegExp(page), [page])
   const params = useMemo(() => getParams(page, pageName), [page, pageName])
 
   // console.log('->page', page, 'pageName', pageName)
   // console.log('regexp', regexp, pageName.match(regexp), regexp.exec(pageName))
   // console.log('params', params)
 
-  if (!pageName.match(regexp)) return
-
   return (
-    <ParamsContext.Provider value={params}>{element}</ParamsContext.Provider>
+    pageName.match(regexp) && (
+      <ParamsContext.Provider value={params}>{element}</ParamsContext.Provider>
+    )
   )
 }
