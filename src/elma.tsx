@@ -24,14 +24,12 @@ function reactRender({ root, contextData, server }: ElmaProps) {
     createRoot(root).render(
       <StrictMode>
         <BrowserRouter>
-          <>
-            <Route element={<Home />} />
-            <Route page='page1' element={<Page1 />} />
-            <Route page='page2' element={<Page2 />} />
-            <Route page='projects' element={<ProjectsHome />} />
-            <Route page='project' element={<Project />} />
-            <Route page='project/edit' element={<EditProject />} />
-          </>
+          <Route element={<Home />} />
+          <Route page='page1' element={<Page1 />} />
+          <Route page='page2' element={<Page2 />} />
+          <Route page='projects' element={<ProjectsHome />} />
+          <Route page='project' element={<Project />} />
+          <Route page='project/edit' element={<EditProject />} />
         </BrowserRouter>
       </StrictMode>,
     )

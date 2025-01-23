@@ -4,7 +4,7 @@ import { NavLink } from './NavLink/NavLink'
 import { Route } from './Route/Route'
 
 type Props = {
-  children: React.ReactElement
+  children: React.ReactElement | React.ReactElement[]
 }
 
 function BrowserRouter({ children }: Props) {
