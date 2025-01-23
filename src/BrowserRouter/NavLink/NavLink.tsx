@@ -1,6 +1,5 @@
 import { useCallback, useMemo } from 'react'
-import { getBaseUrl } from '../utils'
-import { useSetPage } from '../hooks'
+import { useNavigate } from '../hooks'
 
 type Props = {
   to?: string
@@ -8,7 +7,7 @@ type Props = {
 }
 
 export const NavLink = ({ to = '', children }: Props) => {
-  const setPage = useSetPage()
+  const navigate = useNavigate()
 
   const href = useMemo(() => {
     const url = to.split('?')
@@ -20,10 +19,9 @@ export const NavLink = ({ to = '', children }: Props) => {
   const clickHandler: React.MouseEventHandler<HTMLAnchorElement> = useCallback(
     e => {
       e.preventDefault()
-      history.pushState(null, '', getBaseUrl() + href)
-      setPage(href)
+      navigate(href)
     },
-    [href, setPage],
+    [href, navigate],
   )
   return (
     <a href={href} onClick={clickHandler}>
