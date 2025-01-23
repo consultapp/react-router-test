@@ -30,6 +30,8 @@ function reactRender({ root, contextData, server }: ElmaProps) {
           <Route page='projects' element={<ProjectsHome />} />
           <Route page='project' element={<Project />} />
           <Route page='project/:param1' element={<Project />} />
+          {/* ошибочный путь: дубль */}
+          {/* <Route page='project/:param2' element={<Project />} /> */}
           <Route page='project/:id/edit/:status' element={<EditProject />} />
         </BrowserRouter>
       </StrictMode>,
