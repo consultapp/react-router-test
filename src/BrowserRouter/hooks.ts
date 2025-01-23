@@ -1,5 +1,5 @@
 import { useContext } from 'react'
-import { BrowserContext } from './context'
+import { BrowserContext, ParamsContext } from './context'
 import { getBaseUrl } from './utils'
 
 export function useSearchParams() {
@@ -12,4 +12,8 @@ export function usePage() {
 
 export function useSetPage() {
   return useContext(BrowserContext).setPage
+}
+
+export function useParams() {
+  return useContext(ParamsContext)
 }
