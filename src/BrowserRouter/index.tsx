@@ -42,11 +42,9 @@ function BrowserRouter({ children }: Props) {
   console.log('====> render++', render++)
   const [page, setPage] = useState(window.location.search)
   const [component, setComponent] = useState<React.ReactElement>()
-  const childrenArrRef = useRef(Array.isArray(children) ? children : [children])
+  const childrenRefs = useRef(Array.isArray(children) ? children : [children])
 
-  console.log('children', children)
-
-  const componentPageName = useMemo(
+  const currentPageName = useMemo(
     () =>
       new URL(getBaseUrl() + page).searchParams.get('page')?.slice(1, -1) ?? '',
     [page],
@@ -54,20 +52,20 @@ function BrowserRouter({ children }: Props) {
 
   const routeRegExps = useMemo(
     () =>
-      childrenArrRef.current.map(item =>
+      childrenRefs.current.map(item =>
         //@ts-expect-error ts-ignore
         getPageRegExp(item.props.page ?? ''),
       ),
-    [childrenArrRef],
+    [childrenRefs],
   )
-  const routePages = useMemo(
+  const routeMasks = useMemo(
     () =>
-      childrenArrRef.current.map(
+      childrenRefs.current.map(
         item =>
           //@ts-expect-error ts-ignore
           item.props.page ?? '',
       ),
-    [childrenArrRef],
+    [childrenRefs],
   )
 
   const routeRegExpsisError = useMemo(
@@ -79,18 +77,18 @@ function BrowserRouter({ children }: Props) {
 
   const routeIndex = useMemo(() => {
     for (let i = 0; i < routeRegExps.length; i++) {
-      if (componentPageName.match(routeRegExps[i])) return i
+      if (currentPageName.match(routeRegExps[i])) return i
     }
     return -1
-  }, [routeRegExps, componentPageName])
+  }, [routeRegExps, currentPageName])
 
-  const componentPageMask = useMemo(() => {
-    return routeIndex < 0 ? '' : routePages[routeIndex]
-  }, [routeIndex, routePages])
+  const currentMask = useMemo(() => {
+    return routeIndex < 0 ? '' : routeMasks[routeIndex]
+  }, [routeIndex, routeMasks])
 
   const params = useMemo(
-    () => getParams(componentPageMask, componentPageName),
-    [componentPageMask, componentPageName],
+    () => getParams(currentMask, currentPageName),
+    [currentMask, currentPageName],
   )
 
   useEffect(() => {
@@ -106,16 +104,22 @@ function BrowserRouter({ children }: Props) {
   }, [])
 
   useEffect(() => {
-    if (routeIndex < 0) {
-      setComponent(<ErrorPage />)
-    } else {
-      //@ts-expect-error ts-ignore
-      setComponent(childrenArrRef.current[routeIndex].props.element)
-    }
-  }, [page, routeIndex, setComponent])
+    const newComponent =
+      routeIndex < 0 ? (
+        <ErrorPage msg='Route Error' />
+      ) : (
+        //@ts-expect-error ts-ignore
+        childrenRefs.current[routeIndex].props.element
+      )
 
+    if (component !== newComponent) {
+      setComponent(newComponent)
+    }
+  }, [component, routeIndex])
+
+  // console.log('children', children)
   // console.log('page', page)
-  // console.log('componentPageName', componentPageName)
+  // console.log('currentPageName', currentPageName)
   // console.log('component', component)
   // console.log('routeIndex', routeIndex)
   // console.log('routeRegExps', routeRegExps)
