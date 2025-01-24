@@ -1,14 +1,22 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { BrowserContext, ParamsContext } from './context'
 import { NavLink } from './NavLink/NavLink'
 import { Route } from './Route/Route'
 import { getBaseUrl } from './utils'
 import { ErrorPage } from './ErrorPage/ErrorPage'
+import { ErrorRoute } from './ErrorRoute/ErrorRoute'
 
 type Props = {
   children:
     | React.ReactElement<typeof Route>
     | React.ReactElement<typeof Route>[]
+}
+
+type RouteProps = {
+  page: string
+  regExp: RegExp
+  mask: string
+  element: React.ReactElement
 }
 
 function getPageRegExp(pageMask: string) {
@@ -38,23 +46,40 @@ function getParams(pageMask: string, pageName: string) {
 
 let render = 0
 
+const filterChildrens = (
+  children: Props['children'],
+  type: typeof Route | typeof ErrorRoute,
+) =>
+  (Array.isArray(children) ? children : [children])
+    .filter(ch => ch.type === type)
+    .map(item => ({ ...item.props })) as RouteProps[]
+
 function BrowserRouter({ children }: Props) {
   console.log('====> render++', render++)
   const [page, setPage] = useState(window.location.search)
   const [component, setComponent] = useState<React.ReactElement>()
-  const childrenRefs = useRef(
-    (Array.isArray(children) ? children : [children]).filter(
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      ch => ch.type.name === 'Route',
-    ),
+
+  const routes = useMemo(
+    () =>
+      filterChildrens(children, Route).map(item => ({
+        ...item,
+        regExp: getPageRegExp(item.page ?? ''),
+        mask: item.page ?? '',
+      })),
+    [children],
   )
-  const childrenErrorRefs = useRef(
-    (Array.isArray(children) ? children : [children]).filter(
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      ch => ch.type.name === 'ErrorRoute',
-    ),
+
+  const isRoutesDuplication = useMemo(
+    () =>
+      new Set(routes.map(item => item.regExp.toString())).size !==
+      routes.map(item => item.toString()).length,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [children],
+  )
+
+  const errorRoutes = useMemo(
+    () => filterChildrens(children, ErrorRoute),
+    [children],
   )
 
   const currentPageName = useMemo(
@@ -63,58 +88,33 @@ function BrowserRouter({ children }: Props) {
     [page],
   )
 
-  const routeRegExps = useMemo(
-    () =>
-      childrenRefs.current.map(item =>
-        //@ts-expect-error ts-ignore
-        getPageRegExp(item.props.page ?? ''),
-      ),
-    [childrenRefs],
-  )
-  const routeMasks = useMemo(
-    () =>
-      childrenRefs.current.map(
-        item =>
-          //@ts-expect-error ts-ignore
-          item.props.page ?? '',
-      ),
-    [childrenRefs],
-  )
-
-  const routeRegExpsisError = useMemo(
-    () =>
-      new Set(routeRegExps.map(item => item.toString())).size !==
-      routeRegExps.map(item => item.toString()).length,
-    [routeRegExps],
-  )
-
   const routeIndex = useMemo(() => {
-    for (let i = 0; i < routeRegExps.length; i++) {
-      if (currentPageName.match(routeRegExps[i])) return i
+    for (let i = 0; i < routes.length; i++) {
+      if (currentPageName.match(routes[i].regExp)) return i
     }
     return -1
-  }, [routeRegExps, currentPageName])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [children, page])
 
   const currentMask = useMemo(() => {
-    return routeIndex < 0 ? '' : routeMasks[routeIndex]
-  }, [routeIndex, routeMasks])
+    return routeIndex < 0 ? '' : routes[routeIndex].mask
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [routeIndex])
 
   const errorPageComponent = useMemo(
     () =>
-      childrenErrorRefs.current.length &&
-      Object.keys(childrenErrorRefs.current[0].props).length > 0 ? (
-        //@ts-expect-error ts-ignore
-        childrenErrorRefs.current[0].props.element
+      errorRoutes.length ? (
+        errorRoutes[0].element
       ) : (
         <ErrorPage msg='404: Page not found.' />
       ),
-    [],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [children],
   )
 
   const currentPageComponent = useMemo(
-    () =>
-      //@ts-expect-error ts-ignore
-      routeIndex > 0 ? childrenRefs.current[routeIndex].props.element : null,
+    () => routes[routeIndex]?.element,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [routeIndex],
   )
 
@@ -140,25 +140,19 @@ function BrowserRouter({ children }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [routeIndex])
 
-  // console.log('children', children)
-  // console.log('childrenRefs.current', childrenRefs.current)
-  // console.log(
-  //   'childrenErrorRefs.current',
-  //   childrenErrorRefs.current,
-  // )
-  // console.log('page', page)
-  // console.log('currentPageName', currentPageName)
-  // console.log('component', component)
-  // console.log('routeIndex', routeIndex)
-  // console.log('routeRegExps', routeRegExps)
-  // console.log('routeRegExpsisError', routeRegExpsisError)
-  // console.log('params', params)
-
-  if (routeRegExpsisError) return <div>Ошибка. Дублирующие пути.</div>
+  console.log('page', page)
+  console.log('currentPageName', currentPageName)
+  console.log('routeIndex', routeIndex)
+  console.log('children', children)
+  console.log('routes', routes)
+  console.log('errorRoutes', errorRoutes)
+  console.log('component', component)
+  console.log('isRoutesDuplication', isRoutesDuplication)
+  console.log('params', params)
 
   return (
     <BrowserContext.Provider value={{ page, setPage }}>
-      {routeRegExpsisError && <div>Дублирование путей</div>}
+      {isRoutesDuplication && <div>Ошибка: Дублирование путей</div>}
       <ParamsContext.Provider value={params}>
         {component}
       </ParamsContext.Provider>
