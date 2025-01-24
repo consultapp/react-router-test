@@ -13,8 +13,32 @@
   <Route page='project' element={<Project />} />
   <Route page='project/:param1' element={<Project />} />
   <Route page='project/:id/edit/:status' element={<EditProject />} />
+  <ErrorRoute element={<ErrorPage msg='Custom 404: Page not found.' />} />
 </BrowserRouter>
 ```
+
+### Route
+
+Компонент для задания маски пути, поддерживает динамические параметры - `project/:param1`, принимает 2 параметра.
+
+```ts
+type RouteProps = {
+  element: React.ReactElement
+  page?: string
+}
+```
+
+### ErrorRoute
+
+Компонент для определения компонента страницы, отображаемого при несовпадении всех указанных масок. При его отсутствии показывается базовый компонент ошибки 404.
+
+```ts
+type ErrorRouteProps = {
+  element: React.ReactElement
+}
+```
+
+Компонент для задания компонента для
 
 ## Переходы по страницам
 
