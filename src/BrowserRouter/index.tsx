@@ -5,7 +5,7 @@ import { Route } from './Route/Route'
 import { getBaseUrl } from './utils'
 import { ErrorPage } from './ErrorPage/ErrorPage'
 import { ErrorRoute } from './ErrorRoute/ErrorRoute'
-import { log } from '@/utils'
+import { log } from '../utils'
 
 type Props = {
   children:
@@ -45,8 +45,6 @@ function getParams(pageMask: string, pageName: string) {
   return result
 }
 
-let render = 0
-
 const filterChildrens = (
   children: Props['children'],
   type: typeof Route | typeof ErrorRoute,
@@ -54,6 +52,8 @@ const filterChildrens = (
   (Array.isArray(children) ? children : [children])
     .filter(ch => ch.type === type)
     .map(item => ({ ...item.props })) as RouteProps[]
+
+let render = 0
 
 function BrowserRouter({ children }: Props) {
   log('====> render++', render++)
@@ -89,18 +89,11 @@ function BrowserRouter({ children }: Props) {
     [page],
   )
 
-  const routeIndex = useMemo(() => {
-    for (let i = 0; i < routes.length; i++) {
-      if (currentPageName.match(routes[i].regExp)) return i
-    }
-    return -1
+  const routeIndex = useMemo(
+    () => routes.findIndex(({ regExp }) => currentPageName.match(regExp)),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [children, page])
-
-  const currentMask = useMemo(() => {
-    return routeIndex < 0 ? '' : routes[routeIndex].mask
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [routeIndex])
+    [children, page],
+  )
 
   const errorPageComponent = useMemo(
     () =>
@@ -113,15 +106,9 @@ function BrowserRouter({ children }: Props) {
     [children],
   )
 
-  const currentPageComponent = useMemo(
-    () => routes[routeIndex]?.element,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [routeIndex],
-  )
-
   const params = useMemo(
-    () => getParams(currentMask, currentPageName),
-    [currentMask, currentPageName],
+    () => getParams(routes[routeIndex].mask, currentPageName),
+    [currentPageName, routeIndex, routes],
   )
 
   useEffect(() => {
@@ -137,19 +124,20 @@ function BrowserRouter({ children }: Props) {
   }, [])
 
   useEffect(() => {
-    setComponent(routeIndex < 0 ? errorPageComponent : currentPageComponent)
+    const c = routeIndex < 0 ? errorPageComponent : routes[routeIndex]?.element
+    if (c !== component) setComponent(c)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [routeIndex])
 
-  log('page', page)
-  log('currentPageName', currentPageName)
-  log('routeIndex', routeIndex)
-  log('children', children)
-  log('routes', routes)
-  log('errorRoutes', errorRoutes)
-  log('component', component)
-  log('isRoutesDuplication', isRoutesDuplication)
-  log('params', params)
+  // log('page', page)
+  // log('currentPageName', currentPageName)
+  // log('routeIndex', routeIndex)
+  // log('children', children)
+  // log('routes', routes)
+  // log('errorRoutes', errorRoutes)
+  // log('component', component)
+  // log('isRoutesDuplication', isRoutesDuplication)
+  // log('params', params)
 
   return (
     <BrowserContext.Provider value={{ page, setPage }}>
