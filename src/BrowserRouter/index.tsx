@@ -5,6 +5,7 @@ import { Route } from './Route/Route'
 import { getBaseUrl } from './utils'
 import { ErrorPage } from './ErrorPage/ErrorPage'
 import { ErrorRoute } from './ErrorRoute/ErrorRoute'
+import { log } from '@/utils'
 
 type Props = {
   children:
@@ -23,7 +24,7 @@ function getPageRegExp(pageMask: string) {
   const arr = pageMask.split('/')
   arr.forEach((item, i) => {
     if (item.includes(':')) {
-      console.log('item', item)
+      log('item', item)
       arr[i] = `([0-9a-zA-Z]*)`
     }
   })
@@ -39,7 +40,7 @@ function getParams(pageMask: string, pageName: string) {
   pageMaskArr.forEach((item, i) => {
     if (item.startsWith(':')) result[item.slice(1)] = pageNameArr[i]
   })
-  console.log('getParams', result)
+  log('getParams', result)
 
   return result
 }
@@ -55,7 +56,7 @@ const filterChildrens = (
     .map(item => ({ ...item.props })) as RouteProps[]
 
 function BrowserRouter({ children }: Props) {
-  console.log('====> render++', render++)
+  log('====> render++', render++)
   const [page, setPage] = useState(window.location.search)
   const [component, setComponent] = useState<React.ReactElement>()
 
@@ -140,15 +141,15 @@ function BrowserRouter({ children }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [routeIndex])
 
-  console.log('page', page)
-  console.log('currentPageName', currentPageName)
-  console.log('routeIndex', routeIndex)
-  console.log('children', children)
-  console.log('routes', routes)
-  console.log('errorRoutes', errorRoutes)
-  console.log('component', component)
-  console.log('isRoutesDuplication', isRoutesDuplication)
-  console.log('params', params)
+  log('page', page)
+  log('currentPageName', currentPageName)
+  log('routeIndex', routeIndex)
+  log('children', children)
+  log('routes', routes)
+  log('errorRoutes', errorRoutes)
+  log('component', component)
+  log('isRoutesDuplication', isRoutesDuplication)
+  log('params', params)
 
   return (
     <BrowserContext.Provider value={{ page, setPage }}>
