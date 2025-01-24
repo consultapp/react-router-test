@@ -42,7 +42,20 @@ function BrowserRouter({ children }: Props) {
   console.log('====> render++', render++)
   const [page, setPage] = useState(window.location.search)
   const [component, setComponent] = useState<React.ReactElement>()
-  const childrenRefs = useRef(Array.isArray(children) ? children : [children])
+  const childrenRefs = useRef(
+    (Array.isArray(children) ? children : [children]).filter(
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      ch => ch.type.name === 'Route',
+    ),
+  )
+  const childrenErrorRefs = useRef(
+    (Array.isArray(children) ? children : [children]).filter(
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      ch => ch.type.name === 'ErrorRoute',
+    ),
+  )
 
   const currentPageName = useMemo(
     () =>
@@ -86,6 +99,25 @@ function BrowserRouter({ children }: Props) {
     return routeIndex < 0 ? '' : routeMasks[routeIndex]
   }, [routeIndex, routeMasks])
 
+  const errorPageComponent = useMemo(
+    () =>
+      childrenErrorRefs.current.length &&
+      Object.keys(childrenErrorRefs.current[0].props).length > 0 ? (
+        //@ts-expect-error ts-ignore
+        childrenErrorRefs.current[0].props.element
+      ) : (
+        <ErrorPage msg='404: Page not found.' />
+      ),
+    [],
+  )
+
+  const currentPageComponent = useMemo(
+    () =>
+      //@ts-expect-error ts-ignore
+      routeIndex > 0 ? childrenRefs.current[routeIndex].props.element : null,
+    [routeIndex],
+  )
+
   const params = useMemo(
     () => getParams(currentMask, currentPageName),
     [currentMask, currentPageName],
@@ -104,20 +136,16 @@ function BrowserRouter({ children }: Props) {
   }, [])
 
   useEffect(() => {
-    const newComponent =
-      routeIndex < 0 ? (
-        <ErrorPage msg='Route Error' />
-      ) : (
-        //@ts-expect-error ts-ignore
-        childrenRefs.current[routeIndex].props.element
-      )
-
-    if (component !== newComponent) {
-      setComponent(newComponent)
-    }
-  }, [component, routeIndex])
+    setComponent(routeIndex < 0 ? errorPageComponent : currentPageComponent)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [routeIndex])
 
   // console.log('children', children)
+  // console.log('childrenRefs.current', childrenRefs.current)
+  // console.log(
+  //   'childrenErrorRefs.current',
+  //   childrenErrorRefs.current,
+  // )
   // console.log('page', page)
   // console.log('currentPageName', currentPageName)
   // console.log('component', component)

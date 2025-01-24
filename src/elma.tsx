@@ -10,6 +10,8 @@ import { ProjectsHome } from './components/ProjectsHome'
 import { Project } from './components/Project'
 import { BrowserRouter, Route } from './BrowserRouter'
 import { EditProject } from './components/EditProject'
+import { ErrorRoute } from './BrowserRouter/ErrorRoute/ErrorRoute'
+import { ErrorPage } from './BrowserRouter/ErrorPage/ErrorPage'
 
 let renderCount = 0
 
@@ -33,6 +35,9 @@ function reactRender({ root, contextData, server }: ElmaProps) {
           {/* ошибочный путь: дубль */}
           {/* <Route page='project/:param2' element={<Project />} /> */}
           <Route page='project/:id/edit/:status' element={<EditProject />} />
+          <ErrorRoute
+            element={<ErrorPage msg='Custom 404: Page not found.' />}
+          />
         </BrowserRouter>
       </StrictMode>,
     )
